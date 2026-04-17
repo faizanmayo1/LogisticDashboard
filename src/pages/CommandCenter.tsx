@@ -34,16 +34,19 @@ import { GlassTooltip } from '@/components/charts/tooltip';
 import { dockActivity, liveFeed } from '@/data/series';
 import { WAREHOUSES } from '@/data/core';
 import { EXCEPTIONS } from '@/data/exceptions';
+import { CONTAINERS } from '@/data/containers';
 import { Drawer } from '@/components/ui/Drawer';
 import { ProgressBar } from '@/components/ui/ProgressBar';
+import { ChevronRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
-const facilityPins = [
-  { id: 'lax', label: 'LAX-01', left: '12%', top: '58%', tone: 'warning', size: 14 },
-  { id: 'oak', label: 'OAK-02', left: '10%', top: '44%', tone: 'success', size: 10 },
-  { id: 'hou', label: 'HOU-11', left: '44%', top: '72%', tone: 'success', size: 12 },
-  { id: 'sav', label: 'SAV-07', left: '74%', top: '62%', tone: 'danger', size: 16 },
-  { id: 'nyc', label: 'NYC-03', left: '80%', top: '36%', tone: 'brand', size: 12 },
-  { id: 'chi', label: 'CHI-05', left: '56%', top: '34%', tone: 'brand', size: 11 },
+const facilityPins: { id: string; code: string; left: string; top: string; tone: string; size: number }[] = [
+  { id: 'wh-lax1', code: 'LAX-01', left: '12%', top: '58%', tone: 'warning', size: 14 },
+  { id: 'wh-oak1', code: 'OAK-02', left: '10%', top: '44%', tone: 'success', size: 10 },
+  { id: 'wh-hou1', code: 'HOU-11', left: '44%', top: '72%', tone: 'success', size: 12 },
+  { id: 'wh-sav1', code: 'SAV-07', left: '74%', top: '62%', tone: 'danger', size: 16 },
+  { id: 'wh-nyc1', code: 'NYC-03', left: '80%', top: '36%', tone: 'brand', size: 12 },
+  { id: 'wh-chi1', code: 'CHI-05', left: '56%', top: '34%', tone: 'brand', size: 11 },
 ];
 
 const toneDot: Record<string, string> = {
@@ -54,7 +57,13 @@ const toneDot: Record<string, string> = {
 };
 
 export default function CommandCenter() {
+  const nav = useNavigate();
   const [drawerItem, setDrawerItem] = useState<typeof EXCEPTIONS[number] | null>(null);
+  const [facilityId, setFacilityId] = useState<string | null>(null);
+  const facility = facilityId ? WAREHOUSES.find((w) => w.id === facilityId) : null;
+  const facilityContainers = facility
+    ? CONTAINERS.filter((c) => c.destination === facility.code || c.origin.includes(facility.city.split(',')[0]))
+    : [];
   return (
     <>
       <SectionHeader
@@ -172,12 +181,22 @@ export default function CommandCenter() {
               </svg>
 
               {facilityPins.map((p) => (
-                <div key={p.id} className="absolute" style={{ left: p.left, top: p.top, transform: 'translate(-50%,-50%)' }}>
-                  <span className={`block rounded-full ${toneDot[p.tone]} animate-pulseDot`} style={{ width: p.size, height: p.size }} />
-                  <div className="mt-1 mono text-[10px] uppercase tracking-wider text-ink-300 whitespace-nowrap">
-                    {p.label}
+                <button
+                  key={p.id}
+                  type="button"
+                  onClick={() => setFacilityId(p.id)}
+                  className="absolute group focus-ring rounded-full -m-2 p-2"
+                  style={{ left: p.left, top: p.top, transform: 'translate(-50%,-50%)' }}
+                  title={`Open ${p.code}`}
+                >
+                  <span
+                    className={`block rounded-full ${toneDot[p.tone]} animate-pulseDot transition-transform group-hover:scale-125`}
+                    style={{ width: p.size, height: p.size }}
+                  />
+                  <div className="mt-1 mono text-[10px] uppercase tracking-wider text-ink-300 whitespace-nowrap group-hover:text-ink-100 transition-colors">
+                    {p.code}
                   </div>
-                </div>
+                </button>
               ))}
               <div className="absolute bottom-3 left-3 flex items-center gap-3 rounded-lg border border-hairline/[0.08] bg-ink-900/80 px-3 py-2 backdrop-blur text-[11px] text-ink-300">
                 <span className="flex items-center gap-1.5"><span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /> Healthy</span>
@@ -335,6 +354,123 @@ export default function CommandCenter() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Facility drill-down drawer — req §1: network → facility → shipment */}
+      <Drawer
+        open={!!facility}
+        onClose={() => setFacilityId(null)}
+        width="w-[640px]"
+        title={facility ? `${facility.code} · ${facility.name}` : ''}
+        subtitle={facility?.city}
+        footer={
+          <>
+            <Button variant="ghost" onClick={() => setFacilityId(null)}>Close</Button>
+            <Button
+              variant="secondary"
+              onClick={() => { setFacilityId(null); nav('/warehouse'); }}
+            >
+              Open warehouse
+            </Button>
+            <Button
+              variant="primary"
+              icon={<Sparkles className="h-3.5 w-3.5" />}
+              onClick={() => { setFacilityId(null); nav('/dispatch'); }}
+            >
+              AI rebalance
+            </Button>
+          </>
+        }
+      >
+        {facility && (
+          <div className="space-y-5">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <div className="rounded-xl border border-hairline/[0.08] bg-overlay-1/[0.02] p-3">
+                <div className="text-[10px] uppercase tracking-wider text-ink-400">Dock util</div>
+                <div className={`mt-1 mono text-lg ${facility.dockBusyPct > 85 ? 'text-rose-700 dark:text-rose-300' : 'text-ink-100'}`}>
+                  {facility.dockBusyPct}%
+                </div>
+              </div>
+              <div className="rounded-xl border border-hairline/[0.08] bg-overlay-1/[0.02] p-3">
+                <div className="text-[10px] uppercase tracking-wider text-ink-400">Storage</div>
+                <div className={`mt-1 mono text-lg ${facility.storageUtilPct > 90 ? 'text-amber-700 dark:text-amber-300' : 'text-ink-100'}`}>
+                  {facility.storageUtilPct}%
+                </div>
+              </div>
+              <div className="rounded-xl border border-hairline/[0.08] bg-overlay-1/[0.02] p-3">
+                <div className="text-[10px] uppercase tracking-wider text-ink-400">Inbound</div>
+                <div className="mt-1 mono text-lg text-ink-100">{facility.inboundToday}</div>
+              </div>
+              <div className="rounded-xl border border-hairline/[0.08] bg-overlay-1/[0.02] p-3">
+                <div className="text-[10px] uppercase tracking-wider text-ink-400">Outbound</div>
+                <div className="mt-1 mono text-lg text-ink-100">{facility.outboundToday}</div>
+              </div>
+            </div>
+
+            <div>
+              <div className="mb-2 flex items-center justify-between">
+                <div className="text-[11px] uppercase tracking-wider text-ink-400 font-semibold">
+                  Active shipments at {facility.code}
+                </div>
+                <Badge tone={facility.alerts > 2 ? 'danger' : facility.alerts > 0 ? 'warning' : 'success'}>
+                  {facility.alerts} alerts
+                </Badge>
+              </div>
+              {facilityContainers.length === 0 ? (
+                <div className="rounded-xl border border-hairline/[0.08] bg-overlay-1/[0.02] p-6 text-center text-sm text-ink-400">
+                  No live shipments at this facility right now.
+                </div>
+              ) : (
+                <ul className="space-y-2">
+                  {facilityContainers.map((c) => (
+                    <li
+                      key={c.id}
+                      className="flex items-center gap-3 rounded-xl border border-hairline/[0.08] bg-overlay-1/[0.02] p-3 hover:bg-overlay-1/[0.05] transition-colors cursor-pointer"
+                      onClick={() => { setFacilityId(null); nav('/containers'); }}
+                    >
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span className="mono text-[12px] text-ink-100 font-semibold">{c.number}</span>
+                          <Badge
+                            tone={
+                              c.status === 'At Port' ? 'warning' :
+                              c.status === 'In Transit' ? 'brand' :
+                              c.status === 'At Warehouse' ? 'success' :
+                              'neutral'
+                            }
+                            dot
+                          >
+                            {c.status}
+                          </Badge>
+                        </div>
+                        <div className="mt-0.5 text-[11px] text-ink-400 truncate">
+                          {c.customer} · {c.steamship} · ETA {c.etaHours === 0 ? 'arrived' : `${c.etaHours}h`}
+                        </div>
+                      </div>
+                      <ChevronRight className="h-4 w-4 text-ink-500 shrink-0" />
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            <div className="rounded-xl border border-brand-400/30 bg-gradient-to-br from-brand-500/10 via-violet-500/5 to-transparent p-4">
+              <div className="flex items-center gap-2 mb-1.5">
+                <Sparkles className="h-3.5 w-3.5 text-brand-700 dark:text-brand-300" />
+                <div className="text-[11px] uppercase tracking-wider text-brand-700 dark:text-brand-200 font-semibold">
+                  AI Insight
+                </div>
+              </div>
+              <p className="text-sm text-ink-100 leading-relaxed">
+                {facility.dockBusyPct > 85
+                  ? `${facility.code} is at ${facility.dockBusyPct}% dock utilization with ${facility.alerts} alerts. Recommend shifting outbound waves and rebalancing 2 drivers from a nearby terminal.`
+                  : facility.storageUtilPct > 90
+                    ? `${facility.code} storage is at ${facility.storageUtilPct}% — consolidate aged inventory in the next outbound wave to free capacity.`
+                    : `${facility.code} is operating within healthy ranges. No immediate action required.`}
+              </p>
+            </div>
+          </div>
+        )}
+      </Drawer>
 
       <Drawer
         open={!!drawerItem}
