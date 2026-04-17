@@ -37,6 +37,8 @@ import { laneMargin, marginWaterfall } from '@/data/series';
 import { LANES } from '@/data/core';
 import { fmtUSD } from '@/lib/format';
 import { useToast } from '@/components/ui/Toast';
+import { useState } from 'react';
+import { CheckCircle2 } from 'lucide-react';
 
 const recommendations = [
   {
@@ -75,6 +77,11 @@ const recommendations = [
 
 export default function MarginOptimization() {
   const { show } = useToast();
+  const [applied, setApplied] = useState<Record<string, boolean>>({});
+  const apply = (id: string, title: string, impact: number) => {
+    setApplied((s) => ({ ...s, [id]: true }));
+    show({ tone: 'ai', title: 'Recommendation applied', body: `${title} · projected +${fmtUSD(impact)}/mo` });
+  };
   return (
     <>
       <SectionHeader
@@ -269,20 +276,29 @@ export default function MarginOptimization() {
                 <div className="mt-3 flex items-center gap-3">
                   <ProgressBar value={r.confidence} tone="brand" size="sm" className="flex-1" />
                   <span className="mono text-xs text-ink-300 w-14 text-right">{r.confidence}% conf</span>
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    onClick={() => show({ tone: 'info', title: `Preview · ${r.title}`, body: `Confidence ${r.confidence}% · ${r.horizon} horizon · projected ${fmtUSD(r.impact)}/mo` })}
-                  >
-                    Preview
-                  </Button>
-                  <Button
-                    variant="primary"
-                    size="sm"
-                    onClick={() => show({ tone: 'ai', title: 'Recommendation applied', body: `${r.title} · projected +${fmtUSD(r.impact)}/mo` })}
-                  >
-                    Apply
-                  </Button>
+                  {applied[r.id] ? (
+                    <span className="inline-flex items-center gap-1.5 rounded-md border border-emerald-400/30 bg-emerald-400/10 px-2.5 py-1 text-xs font-semibold text-emerald-700 dark:text-emerald-300">
+                      <CheckCircle2 className="h-3.5 w-3.5" />
+                      Applied
+                    </span>
+                  ) : (
+                    <>
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => show({ tone: 'info', title: `Preview · ${r.title}`, body: `Confidence ${r.confidence}% · ${r.horizon} horizon · projected ${fmtUSD(r.impact)}/mo` })}
+                      >
+                        Preview
+                      </Button>
+                      <Button
+                        variant="primary"
+                        size="sm"
+                        onClick={() => apply(r.id, r.title, r.impact)}
+                      >
+                        Apply
+                      </Button>
+                    </>
+                  )}
                 </div>
               </div>
             ))}

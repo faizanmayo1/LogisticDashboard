@@ -34,6 +34,8 @@ import { GlassTooltip } from '@/components/charts/tooltip';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs';
 import { customerMarginErosion, shipmentVolume } from '@/data/series';
 import { fmtUSD } from '@/lib/format';
+import { useState } from 'react';
+import { useToast } from '@/components/ui/Toast';
 
 const savedViews = [
   { name: 'Lane margin leakage', updated: '3m ago', pinned: true },
@@ -43,7 +45,21 @@ const savedViews = [
   { name: 'Weekly executive pack', updated: '2d ago', pinned: false },
 ];
 
+const DEFAULT_QUERY = 'Which customers had the highest margin erosion last month due to dwell and accessorial charges?';
+
 export default function AnalyticsWorkbench() {
+  const { show } = useToast();
+  const [query, setQuery] = useState(DEFAULT_QUERY);
+  const [editing, setEditing] = useState(false);
+  const [running, setRunning] = useState(false);
+  const onRun = () => {
+    setRunning(true);
+    setTimeout(() => {
+      setRunning(false);
+      setEditing(false);
+      show({ tone: 'ai', title: 'Query complete', body: '7 customers · ranked by erosion (dwell + accessorials).' });
+    }, 700);
+  };
   return (
     <>
       <SectionHeader
@@ -52,8 +68,8 @@ export default function AnalyticsWorkbench() {
         description="Ask in plain English. Meridian builds the query, visualizes the result, and lets you pin it to dashboards — no SQL required."
         actions={
           <>
-            <Button variant="subtle" icon={<BookOpen className="h-3.5 w-3.5" />}>Metric catalog</Button>
-            <Button variant="primary" icon={<Sparkles className="h-3.5 w-3.5" />}>Ask Meridian AI</Button>
+            <Button variant="subtle" icon={<BookOpen className="h-3.5 w-3.5" />} onClick={() => show({ tone: 'info', title: 'Metric catalog opened', body: '182 governed definitions' })}>Metric catalog</Button>
+            <Button variant="primary" icon={<Sparkles className="h-3.5 w-3.5" />} onClick={() => show({ tone: 'ai', title: 'Use the chat widget on the right', body: 'Or edit the query above and re-run.' })}>Ask Meridian AI</Button>
           </>
         }
       />
@@ -64,14 +80,47 @@ export default function AnalyticsWorkbench() {
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 to-violet-500 text-white shadow-glow">
               <Wand2 className="h-4 w-4" />
             </div>
-            <div className="flex-1">
+            <div className="flex-1 min-w-0">
               <div className="text-xs text-ink-400 uppercase tracking-wider">Natural language query</div>
-              <div className="mt-1 font-medium text-ink-100">
-                "Which customers had the highest margin erosion last month due to dwell and accessorial charges?"
-              </div>
+              {editing ? (
+                <input
+                  autoFocus
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') onRun();
+                    if (e.key === 'Escape') setEditing(false);
+                  }}
+                  className="mt-1 w-full bg-transparent text-base font-medium text-ink-100 outline-none border-b border-brand-400/60"
+                />
+              ) : (
+                <button
+                  onClick={() => setEditing(true)}
+                  className="mt-1 block w-full text-left font-medium text-ink-100 hover:text-brand-700 dark:hover:text-brand-300 transition-colors"
+                  title="Click to edit"
+                >
+                  "{query}"
+                </button>
+              )}
             </div>
-            <Button variant="subtle" icon={<Copy className="h-3.5 w-3.5" />}>Copy query</Button>
-            <Button variant="primary" icon={<Play className="h-3.5 w-3.5" />}>Re-run</Button>
+            <Button
+              variant="subtle"
+              icon={<Copy className="h-3.5 w-3.5" />}
+              onClick={() => {
+                navigator.clipboard?.writeText(query).catch(() => {});
+                show({ tone: 'success', title: 'Query copied to clipboard' });
+              }}
+            >
+              Copy query
+            </Button>
+            <Button
+              variant="primary"
+              icon={<Play className="h-3.5 w-3.5" />}
+              onClick={onRun}
+              disabled={running}
+            >
+              {running ? 'Running…' : editing ? 'Run' : 'Re-run'}
+            </Button>
           </div>
           <div className="mt-4 rounded-xl border border-hairline/[0.08] bg-ink-800 p-4 mono text-xs text-ink-200 leading-relaxed">
             <div className="text-brand-700 dark:text-brand-300">SELECT</div>
@@ -113,8 +162,8 @@ export default function AnalyticsWorkbench() {
           height={320}
           right={
             <>
-              <Button variant="ghost" size="sm" icon={<Save className="h-3.5 w-3.5" />}>Save</Button>
-              <Button variant="subtle" size="sm">Pin to dashboard</Button>
+              <Button variant="ghost" size="sm" icon={<Save className="h-3.5 w-3.5" />} onClick={() => show({ tone: 'success', title: 'View saved' })}>Save</Button>
+              <Button variant="subtle" size="sm" onClick={() => show({ tone: 'success', title: 'Pinned to Executive Dashboard' })}>Pin to dashboard</Button>
             </>
           }
           footer={
@@ -159,7 +208,11 @@ export default function AnalyticsWorkbench() {
             {savedViews.map((v) => (
               <button
                 key={v.name}
-                className="w-full flex items-center gap-2 rounded-lg px-2.5 py-2 text-left text-sm text-ink-200 hover:bg-overlay-1/[0.04] transition-colors"
+                onClick={() => {
+                  setQuery(v.name + ' — full result');
+                  onRun();
+                }}
+                className="w-full flex items-center gap-2 rounded-lg px-2.5 py-2 text-left text-sm text-ink-200 hover:bg-overlay-1/[0.04] transition-colors focus-ring"
               >
                 <span className={`h-1.5 w-1.5 rounded-full ${v.pinned ? 'bg-brand-400' : 'bg-ink-500'}`} />
                 <span className="flex-1 truncate">{v.name}</span>
