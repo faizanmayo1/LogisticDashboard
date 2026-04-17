@@ -1,0 +1,166 @@
+// Deterministic, believable mock data that's reused across pages to support the story.
+
+export type UUID = string;
+
+export type RiskTone = 'low' | 'elevated' | 'high' | 'critical';
+
+export const BUSINESS_UNITS = [
+  { id: 'bu-west', name: 'West Coast Logistics', region: 'US-West', color: '#4d95ff' },
+  { id: 'bu-south', name: 'Gulf & Southeast', region: 'US-South', color: '#a78bfa' },
+  { id: 'bu-east', name: 'Atlantic Network', region: 'US-East', color: '#2dd4bf' },
+] as const;
+
+export const WAREHOUSES = [
+  {
+    id: 'wh-lax1',
+    code: 'LAX-01',
+    name: 'Long Beach DC',
+    city: 'Long Beach, CA',
+    region: 'US-West',
+    dockDoors: 42,
+    dockBusyPct: 81,
+    storageUtilPct: 92,
+    pickAccuracyPct: 99.2,
+    inboundToday: 38,
+    outboundToday: 51,
+    laborUtilPct: 87,
+    dwellAvgHrs: 18.4,
+    alerts: 3,
+  },
+  {
+    id: 'wh-oak1',
+    code: 'OAK-02',
+    name: 'Oakland Cross-Dock',
+    city: 'Oakland, CA',
+    region: 'US-West',
+    dockDoors: 28,
+    dockBusyPct: 67,
+    storageUtilPct: 74,
+    pickAccuracyPct: 98.7,
+    inboundToday: 22,
+    outboundToday: 29,
+    laborUtilPct: 71,
+    dwellAvgHrs: 12.1,
+    alerts: 1,
+  },
+  {
+    id: 'wh-hou1',
+    code: 'HOU-11',
+    name: 'Houston Bayport DC',
+    city: 'Houston, TX',
+    region: 'US-South',
+    dockDoors: 36,
+    dockBusyPct: 59,
+    storageUtilPct: 68,
+    pickAccuracyPct: 99.4,
+    inboundToday: 18,
+    outboundToday: 24,
+    laborUtilPct: 76,
+    dwellAvgHrs: 14.6,
+    alerts: 0,
+  },
+  {
+    id: 'wh-sav1',
+    code: 'SAV-07',
+    name: 'Savannah Intermodal',
+    city: 'Savannah, GA',
+    region: 'US-East',
+    dockDoors: 48,
+    dockBusyPct: 88,
+    storageUtilPct: 95,
+    pickAccuracyPct: 98.9,
+    inboundToday: 44,
+    outboundToday: 47,
+    laborUtilPct: 93,
+    dwellAvgHrs: 21.2,
+    alerts: 4,
+  },
+  {
+    id: 'wh-nyc1',
+    code: 'NYC-03',
+    name: 'Newark DC',
+    city: 'Elizabeth, NJ',
+    region: 'US-East',
+    dockDoors: 32,
+    dockBusyPct: 72,
+    storageUtilPct: 81,
+    pickAccuracyPct: 99.0,
+    inboundToday: 26,
+    outboundToday: 33,
+    laborUtilPct: 82,
+    dwellAvgHrs: 16.3,
+    alerts: 2,
+  },
+  {
+    id: 'wh-chi1',
+    code: 'CHI-05',
+    name: 'Chicago Hub',
+    city: 'Joliet, IL',
+    region: 'US-Central',
+    dockDoors: 40,
+    dockBusyPct: 64,
+    storageUtilPct: 77,
+    pickAccuracyPct: 99.1,
+    inboundToday: 30,
+    outboundToday: 35,
+    laborUtilPct: 79,
+    dwellAvgHrs: 15.8,
+    alerts: 1,
+  },
+];
+
+export const CUSTOMERS = [
+  { id: 'cust-01', name: 'Halcyon Retail Group', tier: 'Enterprise', accountMgr: 'L. Park', monthlyShipments: 1840, marginPct: 18.2 },
+  { id: 'cust-02', name: 'Northwind Consumer', tier: 'Enterprise', accountMgr: 'J. Okafor', monthlyShipments: 1210, marginPct: 22.6 },
+  { id: 'cust-03', name: 'Polaris Industrial', tier: 'Mid-Market', accountMgr: 'R. Chen', monthlyShipments: 640, marginPct: 14.9 },
+  { id: 'cust-04', name: 'Crescent Foods', tier: 'Enterprise', accountMgr: 'M. Alvarez', monthlyShipments: 2010, marginPct: 11.4 },
+  { id: 'cust-05', name: 'Vector Home Goods', tier: 'Mid-Market', accountMgr: 'S. Patel', monthlyShipments: 510, marginPct: 19.8 },
+  { id: 'cust-06', name: 'Orion Apparel', tier: 'Enterprise', accountMgr: 'L. Park', monthlyShipments: 1320, marginPct: 24.1 },
+  { id: 'cust-07', name: 'Cedar & Bloom', tier: 'Mid-Market', accountMgr: 'T. Nakamura', monthlyShipments: 380, marginPct: 21.3 },
+];
+
+export const CARRIERS = [
+  { id: 'car-01', name: 'Westbound Drayage', scac: 'WBDR', onTimePct: 94.1, claimsPct: 0.6, rating: 4.7 },
+  { id: 'car-02', name: 'PacRail Logistics', scac: 'PRLL', onTimePct: 89.3, claimsPct: 0.9, rating: 4.3 },
+  { id: 'car-03', name: 'Atlas Intermodal', scac: 'ATLI', onTimePct: 91.7, claimsPct: 0.8, rating: 4.5 },
+  { id: 'car-04', name: 'Redline Freight', scac: 'RDLF', onTimePct: 86.2, claimsPct: 1.4, rating: 4.1 },
+  { id: 'car-05', name: 'Summit Truckload', scac: 'SMTK', onTimePct: 92.8, claimsPct: 0.7, rating: 4.6 },
+  { id: 'car-06', name: 'Harbor Point Dray', scac: 'HBPT', onTimePct: 88.4, claimsPct: 1.1, rating: 4.2 },
+];
+
+export const LANES = [
+  { id: 'lane-1', origin: 'Los Angeles, CA', destination: 'Phoenix, AZ', mode: 'Drayage + OTR', volume: 1204, marginPct: 21.4, trendPct: 3.1 },
+  { id: 'lane-2', origin: 'Long Beach, CA', destination: 'Las Vegas, NV', mode: 'OTR', volume: 980, marginPct: 17.8, trendPct: -1.6 },
+  { id: 'lane-3', origin: 'Savannah, GA', destination: 'Atlanta, GA', mode: 'Drayage', volume: 1530, marginPct: 9.2, trendPct: -4.3 },
+  { id: 'lane-4', origin: 'Houston, TX', destination: 'Dallas, TX', mode: 'OTR', volume: 1180, marginPct: 24.7, trendPct: 5.2 },
+  { id: 'lane-5', origin: 'Newark, NJ', destination: 'Boston, MA', mode: 'OTR', volume: 870, marginPct: 19.1, trendPct: 0.8 },
+  { id: 'lane-6', origin: 'Oakland, CA', destination: 'Sacramento, CA', mode: 'OTR', volume: 640, marginPct: 23.0, trendPct: 2.4 },
+  { id: 'lane-7', origin: 'Savannah, GA', destination: 'Charlotte, NC', mode: 'Intermodal', volume: 910, marginPct: 12.6, trendPct: -2.1 },
+  { id: 'lane-8', origin: 'Chicago, IL', destination: 'Minneapolis, MN', mode: 'OTR', volume: 720, marginPct: 20.8, trendPct: 1.2 },
+];
+
+export const DRIVERS = [
+  { id: 'drv-01', name: 'Marco Velasquez', terminal: 'LAX-01', hoursAvail: 7.5, rating: 4.9 },
+  { id: 'drv-02', name: 'Dana Whitfield', terminal: 'LAX-01', hoursAvail: 3.2, rating: 4.8 },
+  { id: 'drv-03', name: 'Tariq Odom', terminal: 'OAK-02', hoursAvail: 6.0, rating: 4.7 },
+  { id: 'drv-04', name: 'Noor Haddad', terminal: 'HOU-11', hoursAvail: 8.1, rating: 4.9 },
+  { id: 'drv-05', name: 'Ivan Kessler', terminal: 'SAV-07', hoursAvail: 2.0, rating: 4.6 },
+  { id: 'drv-06', name: 'Priya Balaji', terminal: 'NYC-03', hoursAvail: 5.6, rating: 4.9 },
+  { id: 'drv-07', name: 'Eli Shepard', terminal: 'CHI-05', hoursAvail: 7.8, rating: 4.7 },
+  { id: 'drv-08', name: 'Sofia Marchetti', terminal: 'SAV-07', hoursAvail: 4.4, rating: 4.8 },
+];
+
+export const INTEGRATIONS = [
+  { id: 'int-sap', name: 'SAP S/4HANA', category: 'ERP', status: 'healthy', latencyMs: 142, lastSync: '2m ago', direction: 'bi' },
+  { id: 'int-ns', name: 'NetSuite', category: 'ERP', status: 'healthy', latencyMs: 180, lastSync: '1m ago', direction: 'bi' },
+  { id: 'int-mgn', name: 'Manhattan WMS', category: 'WMS', status: 'degraded', latencyMs: 640, lastSync: '8m ago', direction: 'bi' },
+  { id: 'int-bl', name: 'Blue Yonder TMS', category: 'TMS', status: 'healthy', latencyMs: 95, lastSync: '30s ago', direction: 'bi' },
+  { id: 'int-pm', name: 'Project44 Visibility', category: 'Visibility', status: 'healthy', latencyMs: 210, lastSync: '1m ago', direction: 'in' },
+  { id: 'int-sf', name: 'Salesforce', category: 'CRM', status: 'healthy', latencyMs: 160, lastSync: '3m ago', direction: 'bi' },
+  { id: 'int-sb', name: 'Snowflake', category: 'Data Warehouse', status: 'healthy', latencyMs: 110, lastSync: '5m ago', direction: 'out' },
+  { id: 'int-edi', name: 'EDI Gateway (X12)', category: 'EDI', status: 'healthy', latencyMs: 320, lastSync: '2m ago', direction: 'bi' },
+  { id: 'int-cq', name: 'CargoQuotes API', category: 'Rating', status: 'outage', latencyMs: 0, lastSync: '42m ago', direction: 'in' },
+  { id: 'int-dp', name: 'DocPortal Scanning', category: 'Docs', status: 'healthy', latencyMs: 240, lastSync: '4m ago', direction: 'in' },
+  { id: 'int-sm', name: 'Samsara Telematics', category: 'Telematics / GPS', status: 'healthy', latencyMs: 95, lastSync: '20s ago', direction: 'in' },
+  { id: 'int-pr', name: 'PortRail Event Feed', category: 'Port / Rail', status: 'healthy', latencyMs: 220, lastSync: '1m ago', direction: 'in' },
+];
