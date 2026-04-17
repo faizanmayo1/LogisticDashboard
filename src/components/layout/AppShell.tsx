@@ -2,6 +2,7 @@ import { ReactNode } from 'react';
 import { Sidebar } from './Sidebar';
 import { Topbar } from './Topbar';
 import { Chatbot } from '@/components/ai/Chatbot';
+import { PresenterDock } from '@/components/demo/PresenterDock';
 
 export function AppShell({ children }: { children: ReactNode }) {
   return (
@@ -13,6 +14,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <div className="mx-auto max-w-[1440px] space-y-6">{children}</div>
         </main>
       </div>
+      <PresenterDock />
       <Chatbot />
     </div>
   );

@@ -13,11 +13,14 @@ import {
   ArrowUpRight,
   Brain,
   CircleDollarSign,
+  Container as ContainerIcon,
+  Crosshair,
   Eye,
   PackageCheck,
   Sparkles,
   Timer,
   TrendingUp,
+  Warehouse as WarehouseIcon,
   Workflow as WorkflowIcon,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -39,10 +42,33 @@ const kpiSpark2 = [18, 17, 19, 16, 15, 14, 16, 15, 13, 14, 12, 13];
 const kpiSpark3 = [32, 28, 30, 27, 29, 31, 28, 26, 27, 29, 30, 32];
 const kpiSpark4 = [62, 60, 64, 66, 65, 68, 70, 72, 71, 74, 76, 78];
 
-const DEMO_STEPS = [
-  { label: 'Container at port', tone: 'warning' as const, path: '/containers' },
-  { label: 'AI flags free-time risk', tone: 'brand' as const, path: '/exceptions' },
-  { label: 'Margin protected $4,000', tone: 'success' as const, path: '/margin' },
+// Operational signals surfaced today — looks like a real ops dashboard,
+// not a demo aid. Each row is clickable and navigates to context.
+const TODAYS_SIGNALS = [
+  {
+    icon: <ContainerIcon className="h-4 w-4" />,
+    tone: 'danger' as const,
+    title: '5 containers within 12h of free-time at LAX',
+    meta: '$14,200 demurrage exposure',
+    action: 'Review',
+    path: '/containers',
+  },
+  {
+    icon: <WarehouseIcon className="h-4 w-4" />,
+    tone: 'warning' as const,
+    title: 'SAV-07 dock at 88% utilization',
+    meta: '6 outbound SLAs at risk in next 4h',
+    action: 'View facility',
+    path: '/warehouse',
+  },
+  {
+    icon: <Crosshair className="h-4 w-4" />,
+    tone: 'brand' as const,
+    title: 'SHP-1021 · margin -21.4% (Crescent Foods)',
+    meta: 'Detention + rehandle · AI claim packet ready',
+    action: 'Recover margin',
+    path: '/margin',
+  },
 ];
 
 export default function ExecutiveDashboard() {
@@ -117,41 +143,60 @@ export default function ExecutiveDashboard() {
         </div>
       </Card>
 
-      {/* Demo flow strip */}
+      {/* Today's Signals — operational items the AI surfaces for leadership */}
       <Card>
-        <CardContent className="p-4 md:p-5">
-          <div className="flex flex-col md:flex-row md:items-center gap-3">
-            <div className="text-[11px] uppercase tracking-[0.16em] font-semibold text-ink-400 shrink-0">
-              Today's Demo Story
-            </div>
-            <div className="hidden md:block h-5 w-px bg-hairline/[0.12]" />
-            <div className="flex-1 flex flex-wrap items-center gap-x-2 gap-y-1.5 text-sm">
-              {DEMO_STEPS.map((s, i, arr) => (
-                <div key={s.label} className="flex items-center gap-2">
-                  <button
-                    onClick={() => nav(s.path)}
-                    className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium transition-transform hover:scale-[1.03] focus-ring ${
-                      s.tone === 'warning' ? 'bg-amber-400/10 text-amber-700 dark:text-amber-200 border border-amber-400/30'
-                      : s.tone === 'brand' ? 'bg-brand-500/10 text-brand-700 dark:text-brand-200 border border-brand-400/30'
-                      : 'bg-emerald-400/10 text-emerald-700 dark:text-emerald-200 border border-emerald-400/30'
-                    }`}
-                  >
-                    <span className="h-1.5 w-1.5 rounded-full bg-current" />
-                    {s.label}
-                  </button>
-                  {i < arr.length - 1 && <ArrowRight className="h-3.5 w-3.5 text-ink-400" />}
-                </div>
-              ))}
+        <CardContent className="p-0">
+          <div className="flex items-center justify-between gap-3 px-5 pt-4 pb-2">
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="text-sm font-semibold tracking-tight text-ink-100">Today's Signals</h3>
+                <span className="inline-flex items-center gap-1 rounded-full border border-brand-400/30 bg-brand-500/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-brand-700 dark:text-brand-200">
+                  <Sparkles className="h-2.5 w-2.5" /> AI-ranked
+                </span>
+              </div>
+              <p className="mt-0.5 text-xs text-ink-400">
+                The 3 things worth your attention right now, ordered by financial impact.
+              </p>
             </div>
             <Button
-              variant="primary"
+              variant="ghost"
               size="sm"
               iconRight={<ArrowRight className="h-3.5 w-3.5" />}
-              onClick={() => nav(DEMO_STEPS[0].path)}
+              onClick={() => nav('/exceptions')}
             >
-              Open scenario
+              See all 12
             </Button>
           </div>
+          <ul className="border-t border-hairline/[0.08]">
+            {TODAYS_SIGNALS.map((s, i) => (
+              <li
+                key={s.title}
+                className={`flex items-center gap-4 px-5 py-3.5 transition-colors hover:bg-overlay-1/[0.03] cursor-pointer ${
+                  i > 0 ? 'border-t border-hairline/[0.06]' : ''
+                }`}
+                onClick={() => nav(s.path)}
+              >
+                <div
+                  className={`flex h-9 w-9 items-center justify-center rounded-lg border ${
+                    s.tone === 'danger'
+                      ? 'border-rose-400/30 bg-rose-400/10 text-rose-700 dark:text-rose-300'
+                      : s.tone === 'warning'
+                        ? 'border-amber-400/30 bg-amber-400/10 text-amber-700 dark:text-amber-300'
+                        : 'border-brand-400/30 bg-brand-500/10 text-brand-700 dark:text-brand-300'
+                  }`}
+                >
+                  {s.icon}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-medium text-ink-100 truncate">{s.title}</div>
+                  <div className="mt-0.5 text-[12px] text-ink-400 truncate">{s.meta}</div>
+                </div>
+                <Button variant="subtle" size="sm" iconRight={<ArrowRight className="h-3.5 w-3.5" />}>
+                  {s.action}
+                </Button>
+              </li>
+            ))}
+          </ul>
         </CardContent>
       </Card>
 
