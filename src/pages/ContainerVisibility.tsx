@@ -178,62 +178,6 @@ export default function ContainerVisibility() {
         />
       </div>
 
-      {/* Chassis & utilization strip — req §2 + §6 */}
-      <Card>
-        <CardContent className="p-4">
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
-            <div className="text-[11px] uppercase tracking-[0.16em] font-semibold text-ink-400">
-              Chassis &amp; Utilization
-            </div>
-            <div className="flex items-center gap-2.5">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-500/10 border border-brand-400/30 text-brand-700 dark:text-brand-300">
-                <Wrench className="h-3.5 w-3.5" />
-              </div>
-              <div>
-                <div className="text-[10px] uppercase tracking-wider text-ink-400">Chassis pool util.</div>
-                <div className="mono text-sm text-ink-100">78% <span className="text-emerald-700 dark:text-emerald-300 text-[11px]">+3.2%</span></div>
-              </div>
-            </div>
-            <div className="flex items-center gap-2.5">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-500/10 border border-violet-400/30 text-violet-700 dark:text-violet-300">
-                <RotateCw className="h-3.5 w-3.5" />
-              </div>
-              <div>
-                <div className="text-[10px] uppercase tracking-wider text-ink-400">Container turn-time</div>
-                <div className="mono text-sm text-ink-100">3.4 days <span className="text-emerald-700 dark:text-emerald-300 text-[11px]">-0.6d</span></div>
-              </div>
-            </div>
-            <div className="flex items-center gap-2.5">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-400/10 border border-emerald-400/30 text-emerald-700 dark:text-emerald-300">
-                <Recycle className="h-3.5 w-3.5" />
-              </div>
-              <div>
-                <div className="text-[10px] uppercase tracking-wider text-ink-400">Street-turn matches today</div>
-                <div className="mono text-sm text-ink-100">14 <span className="text-emerald-700 dark:text-emerald-300 text-[11px]">avoided 14 empties</span></div>
-              </div>
-            </div>
-            <div className="flex items-center gap-2.5">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-400/10 border border-amber-400/30 text-amber-700 dark:text-amber-300">
-                <Clock3 className="h-3.5 w-3.5" />
-              </div>
-              <div>
-                <div className="text-[10px] uppercase tracking-wider text-ink-400">Drayage ETA accuracy</div>
-                <div className="mono text-sm text-ink-100">92% <span className="text-emerald-700 dark:text-emerald-300 text-[11px]">+1.8%</span></div>
-              </div>
-            </div>
-            <div className="flex items-center gap-2.5">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-rose-400/10 border border-rose-400/30 text-rose-700 dark:text-rose-300">
-                <CircleDollarSign className="h-3.5 w-3.5" />
-              </div>
-              <div>
-                <div className="text-[10px] uppercase tracking-wider text-ink-400">Demurrage avoided · MTD</div>
-                <div className="mono text-sm text-ink-100">{fmtUSD(82_400)}</div>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
       <FilterBar
         searchPlaceholder="Filter by container, customer, port, lane..."
         searchValue={search}

@@ -1,8 +1,8 @@
 import { useState, FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowRight, AtSign, Building2, Lock, Sparkles, User } from 'lucide-react';
+import { ArrowRight, AtSign, Building2, Lock, User } from 'lucide-react';
 import { AuthLayout } from '@/components/auth/AuthLayout';
-import { Field, SsoButton } from '@/components/auth/AuthFields';
+import { Field } from '@/components/auth/AuthFields';
 import { Button } from '@/components/ui/Button';
 import { Dropdown } from '@/components/ui/Dropdown';
 import { useAuth } from '@/lib/auth';
@@ -18,14 +18,6 @@ const ROLE_OPTIONS = [
   { value: 'other', label: 'Other' },
 ];
 
-const COMPANY_SIZE_OPTIONS = [
-  { value: '1-50', label: '1–50 employees' },
-  { value: '51-200', label: '51–200 employees' },
-  { value: '201-1000', label: '201–1,000 employees' },
-  { value: '1001-5000', label: '1,001–5,000 employees' },
-  { value: '5000+', label: '5,000+ employees' },
-];
-
 export default function SignUp() {
   const nav = useNavigate();
   const { signUp, continueAsDemo } = useAuth();
@@ -35,7 +27,6 @@ export default function SignUp() {
   const [email, setEmail] = useState('');
   const [company, setCompany] = useState('');
   const [role, setRole] = useState('vp-ops');
-  const [companySize, setCompanySize] = useState('201-1000');
   const [password, setPassword] = useState('');
   const [agree, setAgree] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -69,6 +60,12 @@ export default function SignUp() {
     }, 700);
   };
 
+  const onGoogle = () => {
+    continueAsDemo();
+    show({ tone: 'success', title: 'Workspace created via Google', body: 'Loading your network…' });
+    nav('/', { replace: true });
+  };
+
   return (
     <AuthLayout>
       <div>
@@ -77,40 +74,7 @@ export default function SignUp() {
           14 days, full platform, no credit card required.
         </p>
 
-        <button
-          type="button"
-          onClick={() => {
-            continueAsDemo();
-            show({ tone: 'ai', title: 'Loaded the demo workspace', body: 'Use this to walk through the platform without setup.' });
-            nav('/', { replace: true });
-          }}
-          className="mt-6 w-full group relative overflow-hidden rounded-xl border border-brand-400/30 bg-gradient-to-r from-brand-500/15 via-violet-500/10 to-brand-500/15 p-3.5 text-left transition-colors hover:from-brand-500/25 hover:to-brand-500/25 focus-ring"
-        >
-          <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-brand-500 to-violet-500 text-white shadow-glow">
-              <Sparkles className="h-4 w-4" />
-            </div>
-            <div className="flex-1">
-              <div className="text-sm font-semibold text-ink-100">Tour the platform without signing up</div>
-              <div className="text-[11px] text-ink-400">Skip the form — load the demo workspace instantly.</div>
-            </div>
-            <ArrowRight className="h-4 w-4 text-brand-700 dark:text-brand-300 transition-transform group-hover:translate-x-0.5" />
-          </div>
-        </button>
-
-        <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-2">
-          <SsoButton provider="google" onClick={() => { continueAsDemo(); nav('/', { replace: true }); }} />
-          <SsoButton provider="microsoft" onClick={() => { continueAsDemo(); nav('/', { replace: true }); }} />
-          <SsoButton provider="sso" onClick={() => { continueAsDemo(); nav('/', { replace: true }); }} />
-        </div>
-
-        <div className="mt-6 flex items-center gap-3 text-[11px] uppercase tracking-[0.16em] text-ink-400">
-          <span className="flex-1 h-px bg-hairline/[0.12]" />
-          or sign up with email
-          <span className="flex-1 h-px bg-hairline/[0.12]" />
-        </div>
-
-        <form onSubmit={onSubmit} className="mt-5 space-y-4">
+        <form onSubmit={onSubmit} className="mt-7 space-y-4">
           <Field
             label="Full name"
             placeholder="Ava Rahman"
@@ -139,32 +103,17 @@ export default function SignUp() {
             error={errors.company}
             autoComplete="organization"
           />
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <span className="text-[12px] font-medium text-ink-200">Your role</span>
-              <div className="mt-1.5">
-                <Dropdown
-                  value={role}
-                  options={ROLE_OPTIONS}
-                  onChange={setRole}
-                  className="w-full [&>button]:w-full [&>button]:h-10 [&>button]:rounded-lg"
-                />
-              </div>
-            </div>
-            <div>
-              <span className="text-[12px] font-medium text-ink-200">Company size</span>
-              <div className="mt-1.5">
-                <Dropdown
-                  value={companySize}
-                  options={COMPANY_SIZE_OPTIONS}
-                  onChange={setCompanySize}
-                  className="w-full [&>button]:w-full [&>button]:h-10 [&>button]:rounded-lg"
-                />
-              </div>
+          <div>
+            <span className="text-[12px] font-medium text-ink-200">Your role</span>
+            <div className="mt-1.5">
+              <Dropdown
+                value={role}
+                options={ROLE_OPTIONS}
+                onChange={setRole}
+                className="w-full [&>button]:w-full [&>button]:h-10 [&>button]:rounded-lg"
+              />
             </div>
           </div>
-
           <Field
             label="Password"
             type="password"
@@ -207,7 +156,22 @@ export default function SignUp() {
           </Button>
         </form>
 
-        <div className="mt-6 text-center text-sm text-ink-400">
+        <div className="mt-6 flex items-center gap-3 text-[11px] uppercase tracking-[0.16em] text-ink-400">
+          <span className="flex-1 h-px bg-hairline/[0.12]" />
+          or continue with
+          <span className="flex-1 h-px bg-hairline/[0.12]" />
+        </div>
+
+        <button
+          type="button"
+          onClick={onGoogle}
+          className="mt-4 w-full inline-flex items-center justify-center gap-2.5 rounded-lg border border-hairline/[0.12] bg-ink-900 hover:bg-ink-850 h-10 text-sm font-medium text-ink-100 transition-colors focus-ring"
+        >
+          <GoogleIcon />
+          Sign up with Google
+        </button>
+
+        <div className="mt-8 text-center text-sm text-ink-400">
           Already have an account?{' '}
           <Link to="/signin" className="text-brand-700 dark:text-brand-300 font-medium hover:underline">
             Sign in
@@ -215,5 +179,16 @@ export default function SignUp() {
         </div>
       </div>
     </AuthLayout>
+  );
+}
+
+function GoogleIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-4 w-4" aria-hidden>
+      <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.75h3.57c2.08-1.92 3.28-4.74 3.28-8.07z" fill="#4285F4" />
+      <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.75c-.99.66-2.26 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84A11 11 0 0 0 12 23z" fill="#34A853" />
+      <path d="M5.84 14.12A6.6 6.6 0 0 1 5.5 12c0-.74.13-1.46.34-2.12V7.04H2.18A11 11 0 0 0 1 12c0 1.78.43 3.46 1.18 4.96l3.66-2.84z" fill="#FBBC05" />
+      <path d="M12 5.38c1.62 0 3.07.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.04l3.66 2.84C6.71 7.31 9.14 5.38 12 5.38z" fill="#EA4335" />
+    </svg>
   );
 }

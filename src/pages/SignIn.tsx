@@ -1,8 +1,8 @@
 import { useState, FormEvent } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { ArrowRight, AtSign, Lock, Sparkles } from 'lucide-react';
+import { ArrowRight, AtSign, Lock } from 'lucide-react';
 import { AuthLayout } from '@/components/auth/AuthLayout';
-import { Field, SsoButton } from '@/components/auth/AuthFields';
+import { Field } from '@/components/auth/AuthFields';
 import { Button } from '@/components/ui/Button';
 import { useAuth } from '@/lib/auth';
 import { useToast } from '@/components/ui/Toast';
@@ -46,53 +46,21 @@ export default function SignIn() {
     }, 600);
   };
 
-  const onDemo = () => {
+  const onGoogle = () => {
     continueAsDemo();
-    show({ tone: 'ai', title: 'Signed in as demo user', body: 'Ava Rahman · VP Operations · Halcyon Retail Group' });
-    nav('/', { replace: true });
+    show({ tone: 'success', title: 'Signed in with Google', body: 'Loading your network…' });
+    nav(from, { replace: true });
   };
 
   return (
     <AuthLayout>
       <div>
-        <h1 className="text-[26px] font-semibold tracking-tight text-ink-100">
-          Welcome back
-        </h1>
+        <h1 className="text-[26px] font-semibold tracking-tight text-ink-100">Welcome back</h1>
         <p className="mt-1.5 text-sm text-ink-400">
           Sign in to your Meridian control tower.
         </p>
 
-        {/* Demo bypass — top of page so it's impossible to miss on a live call */}
-        <button
-          type="button"
-          onClick={onDemo}
-          className="mt-6 w-full group relative overflow-hidden rounded-xl border border-brand-400/30 bg-gradient-to-r from-brand-500/15 via-violet-500/10 to-brand-500/15 p-3.5 text-left transition-colors hover:from-brand-500/25 hover:to-brand-500/25 focus-ring"
-        >
-          <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-brand-500 to-violet-500 text-white shadow-glow">
-              <Sparkles className="h-4 w-4" />
-            </div>
-            <div className="flex-1">
-              <div className="text-sm font-semibold text-ink-100">Continue as demo user</div>
-              <div className="text-[11px] text-ink-400">Skip the form — load Ava's executive view instantly.</div>
-            </div>
-            <ArrowRight className="h-4 w-4 text-brand-700 dark:text-brand-300 transition-transform group-hover:translate-x-0.5" />
-          </div>
-        </button>
-
-        <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-2">
-          <SsoButton provider="google" onClick={onDemo} />
-          <SsoButton provider="microsoft" onClick={onDemo} />
-          <SsoButton provider="sso" onClick={onDemo} />
-        </div>
-
-        <div className="mt-6 flex items-center gap-3 text-[11px] uppercase tracking-[0.16em] text-ink-400">
-          <span className="flex-1 h-px bg-hairline/[0.12]" />
-          or sign in with email
-          <span className="flex-1 h-px bg-hairline/[0.12]" />
-        </div>
-
-        <form onSubmit={onSubmit} className="mt-5 space-y-4">
+        <form onSubmit={onSubmit} className="mt-7 space-y-4">
           <Field
             label="Work email"
             type="email"
@@ -145,7 +113,22 @@ export default function SignIn() {
           </Button>
         </form>
 
-        <div className="mt-6 text-center text-sm text-ink-400">
+        <div className="mt-6 flex items-center gap-3 text-[11px] uppercase tracking-[0.16em] text-ink-400">
+          <span className="flex-1 h-px bg-hairline/[0.12]" />
+          or continue with
+          <span className="flex-1 h-px bg-hairline/[0.12]" />
+        </div>
+
+        <button
+          type="button"
+          onClick={onGoogle}
+          className="mt-4 w-full inline-flex items-center justify-center gap-2.5 rounded-lg border border-hairline/[0.12] bg-ink-900 hover:bg-ink-850 h-10 text-sm font-medium text-ink-100 transition-colors focus-ring"
+        >
+          <GoogleIcon />
+          Continue with Google
+        </button>
+
+        <div className="mt-8 text-center text-sm text-ink-400">
           New to Meridian?{' '}
           <Link to="/signup" className="text-brand-700 dark:text-brand-300 font-medium hover:underline">
             Create an account
@@ -153,5 +136,16 @@ export default function SignIn() {
         </div>
       </div>
     </AuthLayout>
+  );
+}
+
+function GoogleIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-4 w-4" aria-hidden>
+      <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.75h3.57c2.08-1.92 3.28-4.74 3.28-8.07z" fill="#4285F4" />
+      <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.75c-.99.66-2.26 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84A11 11 0 0 0 12 23z" fill="#34A853" />
+      <path d="M5.84 14.12A6.6 6.6 0 0 1 5.5 12c0-.74.13-1.46.34-2.12V7.04H2.18A11 11 0 0 0 1 12c0 1.78.43 3.46 1.18 4.96l3.66-2.84z" fill="#FBBC05" />
+      <path d="M12 5.38c1.62 0 3.07.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.04l3.66 2.84C6.71 7.31 9.14 5.38 12 5.38z" fill="#EA4335" />
+    </svg>
   );
 }

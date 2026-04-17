@@ -19,6 +19,8 @@ import { DataTable } from '@/components/ui/DataTable';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/Tabs';
 import { ProgressBar } from '@/components/ui/ProgressBar';
 import { fmtUSD } from '@/lib/format';
+import { useState } from 'react';
+import { useToast } from '@/components/ui/Toast';
 
 const flows = [
   { id: 'fl-1', name: 'Free-time alert → AI pull plan', runs: 184, success: 96.2, saved: 28_400, status: 'active' },
@@ -41,6 +43,22 @@ const templates = [
 ];
 
 export default function WorkflowAutomation() {
+  const { show } = useToast();
+  // Per-flow live status (active/paused) — toggleable.
+  const [flowStatus, setFlowStatus] = useState<Record<string, 'active' | 'paused'>>(
+    Object.fromEntries(flows.map((f) => [f.id, f.status as 'active' | 'paused'])),
+  );
+  const toggleFlow = (id: string, name: string) => {
+    setFlowStatus((s) => {
+      const next = s[id] === 'active' ? 'paused' : 'active';
+      show({
+        tone: next === 'active' ? 'success' : 'info',
+        title: next === 'active' ? 'Workflow activated' : 'Workflow paused',
+        body: name,
+      });
+      return { ...s, [id]: next };
+    });
+  };
   return (
     <>
       <SectionHeader
@@ -49,8 +67,8 @@ export default function WorkflowAutomation() {
         description="Low-code, event-driven workflows that turn AI recommendations into action. Every play runs governed, auditable, reversible."
         actions={
           <>
-            <Button variant="subtle" icon={<GitBranch className="h-3.5 w-3.5" />}>Versions</Button>
-            <Button variant="primary" icon={<Plus className="h-3.5 w-3.5" />}>New workflow</Button>
+            <Button variant="subtle" icon={<GitBranch className="h-3.5 w-3.5" />} onClick={() => show({ tone: 'info', title: 'Version history opened', body: '24 changes across 7 days.' })}>Versions</Button>
+            <Button variant="primary" icon={<Plus className="h-3.5 w-3.5" />} onClick={() => show({ tone: 'info', title: 'Workflow builder opened' })}>New workflow</Button>
           </>
         }
       />
@@ -79,7 +97,14 @@ export default function WorkflowAutomation() {
           </div>
           <div className="flex items-center gap-2">
             <Badge tone="success" dot>Active</Badge>
-            <Button variant="secondary" size="sm" icon={<PlayCircle className="h-3.5 w-3.5" />}>Run now</Button>
+            <Button
+              variant="secondary"
+              size="sm"
+              icon={<PlayCircle className="h-3.5 w-3.5" />}
+              onClick={() => show({ tone: 'success', title: 'Workflow run triggered', body: 'Free-time alert → AI pull plan' })}
+            >
+              Run now
+            </Button>
           </div>
         </CardHeader>
         <CardContent className="pt-0">
@@ -179,11 +204,35 @@ export default function WorkflowAutomation() {
                   {
                     key: 'status',
                     header: 'Status',
-                    render: (r) => (
-                      <Badge tone={r.status === 'active' ? 'success' : 'neutral'} dot>
-                        {r.status}
-                      </Badge>
-                    ),
+                    render: (r) => {
+                      const live = flowStatus[r.id];
+                      const on = live === 'active';
+                      return (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleFlow(r.id, r.name);
+                          }}
+                          className="inline-flex items-center gap-2 focus-ring rounded-md"
+                          aria-label={on ? 'Pause workflow' : 'Activate workflow'}
+                        >
+                          <Badge tone={on ? 'success' : 'neutral'} dot>
+                            {on ? 'active' : 'paused'}
+                          </Badge>
+                          <span
+                            className={`relative inline-flex h-5 w-9 rounded-full transition-colors ${
+                              on ? 'bg-brand-500' : 'bg-overlay-1/[0.12]'
+                            }`}
+                          >
+                            <span
+                              className={`absolute top-0.5 h-4 w-4 rounded-full bg-white shadow transition-all ${
+                                on ? 'left-4' : 'left-0.5'
+                              }`}
+                            />
+                          </span>
+                        </button>
+                      );
+                    },
                   },
                   {
                     key: 'open',
@@ -209,7 +258,13 @@ export default function WorkflowAutomation() {
                   <div className="mt-1 text-xs text-ink-400 leading-relaxed">{t.desc}</div>
                   <div className="mt-4 flex items-center justify-between">
                     <span className="text-[11px] text-ink-400">5 min setup</span>
-                    <Button variant="secondary" size="sm">Use template</Button>
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => show({ tone: 'success', title: 'Template added to your workflows', body: t.name })}
+                    >
+                      Use template
+                    </Button>
                   </div>
                 </CardContent>
               </Card>

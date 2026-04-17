@@ -11,12 +11,11 @@ import {
   Moon,
   Package,
   Search,
-  Sparkles,
   Sun,
   Truck,
   Users,
 } from 'lucide-react';
-import { IconButton, Button } from '@/components/ui/Button';
+import { IconButton } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { NAV } from '@/config/nav';
 import { useTheme } from '@/lib/theme';
@@ -231,15 +230,6 @@ export function Topbar() {
             <Globe2 className="h-3.5 w-3.5 text-ink-400" />
             <span>US-West · PST</span>
           </div>
-          <Button
-            variant="subtle"
-            size="md"
-            icon={<Sparkles className="h-3.5 w-3.5 text-brand-500" />}
-            className="hidden md:inline-flex border-brand-400/25 bg-brand-500/10 text-brand-700 dark:text-brand-200 hover:bg-brand-500/15"
-            onClick={() => show({ tone: 'ai', title: 'Meridian AI is listening', body: 'Ask anything about your network — try "Which lanes lost margin last week?"' })}
-          >
-            Ask Meridian AI
-          </Button>
           <IconButton onClick={toggle} aria-label="Toggle theme" title={theme === 'dark' ? 'Switch to light' : 'Switch to dark'}>
             {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </IconButton>
